@@ -4,7 +4,7 @@
 
 # 24CYS333 - Internet of Things
 
-## IoT#18 - Smart Monitoring of LPG Utility Pipelines Using Sensor-Based Leakage Detection and Metering
+## Smart Monitoring of LPG Utility Pipelines Using Sensor-Based Leakage Detection and Metering
 
 ![](https://img.shields.io/badge/Member-Ponvedica%20M%20S-gold) ![](https://img.shields.io/badge/Member-Soffia%20K%20N-gold) ![](https://img.shields.io/badge/Member-Vedhavarshini%20Vijayakumar-gold) <br/> 
 ![](https://img.shields.io/badge/SDG%207-Affordable%20and%20Clean%20Energy-darkgreen)
