@@ -10,17 +10,11 @@
 ![](https://img.shields.io/badge/SDG%207-Affordable%20and%20Clean%20Energy-darkgreen)
 ![](https://img.shields.io/badge/SDG%209-Industry%2C%20Innovation%20and%20Infrastructure-darkgreen)
 ![](https://img.shields.io/badge/SDG%2011-Sustainable%20Cities%20and%20Communities-darkgreen) <br/>
-![](https://img.shields.io/badge/Reviewed--brown) <br/>
 ![](https://img.shields.io/badge/NIR-IR2026--1009659-purple) 
 
 ------
 
 ### Problem Statement
-![](https://img.shields.io/badge/Clarity-Clear-green) 
-![](https://img.shields.io/badge/Problem_Defined-Clear-green)<br>
-![](https://img.shields.io/badge/Existing_Solutions-Defined-green)
-![](https://img.shields.io/badge/Gaps_in_Existing_Solutions-Addressed-green) <br/> 
-![](https://img.shields.io/badge/Proposed_Solutions-Clear-green) <br/> 
 
 In metropolitan cities of India, LPG gas is increasingly supplied to households through direct utility pipeline connections laid across underground tunnels and corridors. Monitoring these pipelines is challenging, and undetected gas leaks can lead to serious hazards such as fires, explosions, and health risks. Existing gas safety systems are mostly limited to local alarms at the consumer end, which may go unnoticed when users are away and do not provide information about the exact location or severity of leaks occurring within the utility pipelines.
 
