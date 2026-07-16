@@ -25,28 +25,28 @@ This project proposes a Smart Gas Leakage Detection and Emergency Control System
 
 ### Common Components
 
-| ✅ Acquired | Components | Purpose |
-|-------------|------------|---------|
-|       ✅      | **Breadboard** | Circuit prototyping  |
-|             | **Jumper Wires & Foam Board** | Robot connections and Support|
-|             | **Connecting Wires** | Circuit connections|
+| Components | Purpose |
+|------------|---------|
+| **Breadboard** | Circuit prototyping  |
+| **Jumper Wires & Foam Board** | Robot connections and Support|
+| **Connecting Wires** | Circuit connections|
 
 ---
 
-| ✅ Acquired | Components | Purpose |
-|--------------|------------|----------|
-|              | **NodeMCU (ESP8266)** | Used to control the robot car using its wifi |
-|     ✅       | **NEO-6M GPS Module** | Identifies exact location of gas leaks within the pipeline network |
-|              | **ESP32** | Used to connect GPS module & MQ-6 sensor and to send the data to web page using wifi |
-|              | **MQ-6 Gas Sensor** | Primary sensor for LPG gas leakage detection inside pipelines | 
-|              | **LCD Display** | To show the gas leakage level and GPS status|
-|              | **DC Gear Motors (4x)** | Provides movement inside underground utility pipelines |
-|              | **L293D Motor Driver** | Alternative compact motor driver for controlling DC motors |
-|              | **Li-Ion Rechargeable Batteries (18650, 3.7V, 2000–3000mAh)** | Energy storage for continuous underground operation |
-|              | **Battery Holder (18650 x2 / x3)** | Secure mounting and series/parallel battery configuration |
-|              | **Robot Wheels (4x)** | Enables stable navigation inside confined pipeline tunnels |
-|              | **Arduino (Uno)** | To Process hall effect sensor code (Smart gas metering) |
-|              | **Hall Effect Sensor** | Detects magnetic field (Smart gas metering) |
+| Components | Purpose |
+|------------|----------|
+| **NodeMCU (ESP8266)** | Used to control the robot car using its wifi |
+| **NEO-6M GPS Module** | Identifies exact location of gas leaks within the pipeline network |
+| **ESP32** | Used to connect GPS module & MQ-6 sensor and to send the data to web page using wifi |
+| **MQ-6 Gas Sensor** | Primary sensor for LPG gas leakage detection inside pipelines | 
+| **LCD Display** | To show the gas leakage level and GPS status|
+| **DC Gear Motors (4x)** | Provides movement inside underground utility pipelines |
+| **L293D Motor Driver** | Alternative compact motor driver for controlling DC motors |
+| **Li-Ion Rechargeable Batteries (18650, 3.7V, 2000–3000mAh)** | Energy storage for continuous underground operation |
+| **Battery Holder (18650 x2 / x3)** | Secure mounting and series/parallel battery configuration |
+| **Robot Wheels (4x)** | Enables stable navigation inside confined pipeline tunnels |
+| **Arduino (Uno)** | To Process hall effect sensor code (Smart gas metering) |
+| **Hall Effect Sensor** | Detects magnetic field (Smart gas metering) |
 
 ---- 
 
@@ -54,19 +54,19 @@ This project proposes a Smart Gas Leakage Detection and Emergency Control System
 
 ## Software Requirements
 
-| ✅ Available | Components | Purpose |
-|-------------|------------|---------|
-|             | **Arduino IDE** | Programming environment for ESP32/Arduino development |
-|             | **Python 3.x** | Backend server development and data processing |
-|             | **Blynk IoT Platform** | Mobile app interface for real-time monitoring and alerts |
-|             | **Google Maps API** | Location mapping and visualization of leak points |
-|             | **Git/GitHub** | Version control and collaboration |
-|             | **VS Code / PyCharm** | Integrated development environments |
-|             | **HTML / CSS** | Used to structure and style the web dashboard interface|
-|             | **Flask**      | A lightweight Python web framework used to build the web server and handle API routes |
-|             | **JSON**       | Used as the data format to send sensor data (gas value, GPS location) to the server |
-|             | **REST API (POST endpoint)** | Allows external devices (like IoT sensors) to send data to the server |
-|             | **Web Browser (Chrome/Edge etc.)** | Used by users to view the dashboard interface | 
+| Components | Purpose |
+|------------|---------|
+| **Arduino IDE** | Programming environment for ESP32/Arduino development |
+| **Python 3.x** | Backend server development and data processing |
+| **Blynk IoT Platform** | Mobile app interface for real-time monitoring and alerts |
+| **Google Maps API** | Location mapping and visualization of leak points |
+| **Git/GitHub** | Version control and collaboration |
+| **VS Code / PyCharm** | Integrated development environments |
+| **HTML / CSS** | Used to structure and style the web dashboard interface|
+| **Flask**      | A lightweight Python web framework used to build the web server and handle API routes |
+| **JSON**       | Used as the data format to send sensor data (gas value, GPS location) to the server |
+| **REST API (POST endpoint)** | Allows external devices (like IoT sensors) to send data to the server |
+| **Web Browser (Chrome/Edge etc.)** | Used by users to view the dashboard interface | 
 
 ------ 
 ## [Literature Survey](./R1/README.md)  
