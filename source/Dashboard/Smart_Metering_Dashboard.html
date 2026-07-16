@@ -1,1 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LPG Gas Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #0b1f26;
+    --surface:  #112830;
+    --surface2: #163440;
+    --border:   #1f4a57;
+    --safe:     #06d6c7;
+    --warn:     #f59e0b;
+    --danger:   #ef4444;
+    --blue:     #22d3ee;
+    --text:     #e0f7f9;
+    --muted:    #5b9caa;
+    --fh:       'Bebas Neue', cursive;
+    --fm:       'Space Mono', monospace;
+  }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--fm);
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(6,214,199,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6,214,199,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; }
+
+  /* ── HEADER ── */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+  }
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, #0891b2, #06d6c7);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; box-shadow: 0 4px 20px rgba(6,214,199,0.35);
+  }
+  .logo-text h1 { font-family: var(--fh); font-size: 20px; font-weight: 800; color: #fff; }
+  .logo-text p  { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; }
+
+  .conn-badge {
+    display: flex; align-items: center; gap: 7px;
+    border-radius: 20px; padding: 6px 16px; font-size: 11px;
+    letter-spacing: 1px; border: 1px solid; transition: all 0.4s;
+  }
+  .conn-badge.connected    { background: rgba(6,214,199,0.12);  border-color: rgba(6,214,199,0.4);  color: var(--safe); }
+  .conn-badge.disconnected { background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.4);  color: var(--danger); }
+  .conn-badge.waiting      { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: var(--warn); }
+  .conn-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .connected    .conn-dot { background: var(--safe);   animation: blink 1.4s infinite; }
+  .disconnected .conn-dot { background: var(--danger); }
+  .waiting      .conn-dot { background: var(--warn);   animation: blink 1.4s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+  /* ── BURNER HERO ── */
+  .burner-hero {
+    background: var(--surface); border-radius: 16px; padding: 28px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 20px;
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden; transition: border-color 0.4s, box-shadow 0.4s;
+  }
+  .burner-hero.on  { border-color: rgba(239,68,68,0.5);  box-shadow: 0 4px 40px rgba(239,68,68,0.12); }
+  .burner-hero.off { border-color: rgba(6,214,199,0.35); box-shadow: 0 4px 32px rgba(6,214,199,0.08); }
+  .burner-hero::after {
+    content: ''; position: absolute; right: -40px; top: -40px;
+    width: 200px; height: 200px; border-radius: 50%; pointer-events: none; transition: background 0.4s;
+  }
+  .burner-hero.on::after  { background: radial-gradient(circle, rgba(239,68,68,0.12), transparent 70%); }
+  .burner-hero.off::after { background: radial-gradient(circle, rgba(6,214,199,0.10), transparent 70%); }
+
+  .burner-left { display: flex; align-items: center; gap: 20px; }
+  .flame {
+    font-size: 58px; line-height: 1;
+    filter: grayscale(1) opacity(0.25);
+    transition: filter 0.4s;
+  }
+  .flame.on {
+    filter: none;
+    animation: flicker 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes flicker {
+    from { transform: scale(1)    rotate(-2deg); }
+    to   { transform: scale(1.07) rotate(2deg); }
+  }
+  .burner-label { font-family: var(--fh); font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+  .burner-state { font-family: var(--fh); font-size: 46px; font-weight: 800; transition: color 0.4s; line-height: 1; }
+  .burner-state.on  { color: var(--danger); }
+  .burner-state.off { color: var(--safe); }
+
+  .timer-box {
+    text-align: center; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 12px; padding: 18px 28px;
+  }
+  .timer-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .timer-value {
+    font-family: var(--fh); font-size: 38px; font-weight: 800;
+    color: var(--warn); font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  .timer-unit { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── STAT CARDS ── */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px; margin-bottom: 20px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px; position: relative; overflow: hidden;
+    transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0;
+  }
+  .card.green::before  { background: linear-gradient(90deg, var(--safe), transparent); }
+  .card.amber::before  { background: linear-gradient(90deg, var(--warn), transparent); }
+  .card.blue::before   { background: linear-gradient(90deg, var(--blue), transparent); }
+
+  .card-icon { font-size: 26px; opacity: 0.2; position: absolute; top: 18px; right: 16px; }
+  .card-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .card-value { font-family: var(--fh); font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 5px; }
+  .card.green .card-value { color: var(--safe); }
+  .card.amber .card-value { color: var(--warn); }
+  .card.blue  .card-value { color: var(--blue); }
+  .card-sub { font-size: 11px; color: var(--muted); }
+
+  /* ── BILL PANEL ── */
+  .bill-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 16px;
+  }
+  .bill-left .bill-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .bill-amount {
+    font-family: var(--fh); font-size: 52px; font-weight: 800;
+    color: #fff; line-height: 1;
+  }
+  .bill-amount span { font-size: 28px; color: var(--warn); }
+  .bill-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  .bill-breakdown {
+    display: flex; flex-direction: column; gap: 10px; min-width: 200px;
+  }
+  .bill-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; padding: 8px 14px;
+    background: var(--surface2); border-radius: 8px; border: 1px solid var(--border);
+  }
+  .bill-row-label { color: var(--muted); }
+  .bill-row-val   { color: var(--text); font-weight: 700; }
+
+  /* ── HISTORY CHART ── */
+  .history-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden; margin-bottom: 20px;
+  }
+  .panel-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-title { font-family: var(--fh); font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 2px; }
+  .panel-sub   { font-size: 11px; color: var(--muted); }
+
+  .chart-wrap { padding: 16px 20px; }
+  #chart { width: 100%; height: 120px; display: block; }
+
+  /* ── LOG TABLE ── */
+  .log-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); padding: 12px 18px; text-align: left;
+    border-bottom: 1px solid var(--border); font-weight: 400;
+  }
+  td {
+    font-size: 12px; color: var(--text);
+    padding: 11px 18px; border-bottom: 1px solid rgba(30,45,69,0.5);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .badge.on  { background: rgba(239,68,68,0.15);  color: var(--danger); }
+  .badge.off { background: rgba(0,212,170,0.12);  color: var(--safe); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🔥</div>
+      <div class="logo-text">
+        <h1>LPG Gas Monitor</h1>
+        <p>Arduino · Hall Sensor · Real-time</p>
+      </div>
+    </div>
+    <div id="connBadge" class="conn-badge waiting">
+      <div class="conn-dot"></div>
+      <span id="connText">Connecting…</span>
+    </div>
+  </header>
+
+  <!-- BURNER HERO -->
+  <div class="burner-hero off" id="burnerHero">
+    <div class="burner-left">
+      <div class="flame" id="flame">🔥</div>
+      <div>
+        <div class="burner-label">Burner Status</div>
+        <div class="burner-state off" id="burnerState">OFF</div>
+      </div>
+    </div>
+    <div class="timer-box">
+      <div class="timer-label">Burner On Time</div>
+      <div class="timer-value" id="timerVal">0.0</div>
+      <div class="timer-unit">seconds this session</div>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="cards">
+    <div class="card green">
+      <div class="card-icon">💧</div>
+      <div class="card-label">Gas Used</div>
+      <div class="card-value" id="gasL">0.000</div>
+      <div class="card-sub">Litres consumed</div>
+    </div>
+    <div class="card amber">
+      <div class="card-icon">📦</div>
+      <div class="card-label">Gas (SCM)</div>
+      <div class="card-value" id="gasSCM">0.000000</div>
+      <div class="card-sub">Standard cubic metres</div>
+    </div>
+    <div class="card blue">
+      <div class="card-icon">📡</div>
+      <div class="card-label">Flow Rate</div>
+      <div class="card-value">5.0</div>
+      <div class="card-sub">L/min (prototype fixed)</div>
+    </div>
+  </div>
+
+  <!-- BILL PANEL -->
+  <div class="bill-panel">
+    <div class="bill-left">
+      <div class="bill-label">Estimated Bill</div>
+      <div class="bill-amount"><span>₹</span><span id="billRs">0.0000</span></div>
+      <div class="bill-sub">@ ₹50 per SCM · updates live</div>
+    </div>
+    <div class="bill-breakdown">
+      <div class="bill-row">
+        <span class="bill-row-label">Rate</span>
+        <span class="bill-row-val">₹50.00 / SCM</span>
+      </div>
+      <div class="bill-row">
+        <span class="bill-row-label">SCM used</span>
+        <span class="bill-row-val" id="billSCM">0.000000</span>
+      </div>
+      <div class="bill-row">
+        <span class="bill-row-label">Total</span>
+        <span class="bill-row-val" id="billTotal" style="color:var(--warn)">₹0.0000</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAS CHART -->
+  <div class="history-panel">
+    <div class="panel-header">
+      <div class="panel-title">Gas Usage Over Time</div>
+      <div class="panel-sub">Last 60 readings</div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <!-- LOG TABLE -->
+  <div class="log-panel">
+    <div class="panel-header">
+      <div class="panel-title">Event Log</div>
+      <div class="panel-sub" id="logCount">0 events</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Burner</th>
+          <th>On Time (s)</th>
+          <th>Gas (L)</th>
+          <th>Bill (₹)</th>
+        </tr>
+      </thead>
+      <tbody id="logBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  const WS_URL = "ws://localhost:8765";
+
+  // ── DOM refs ──
+  const connBadge  = document.getElementById("connBadge");
+  const connText   = document.getElementById("connText");
+  const burnerHero = document.getElementById("burnerHero");
+  const burnerState= document.getElementById("burnerState");
+  const flame      = document.getElementById("flame");
+  const timerVal   = document.getElementById("timerVal");
+  const gasL       = document.getElementById("gasL");
+  const gasSCM     = document.getElementById("gasSCM");
+  const billRs     = document.getElementById("billRs");
+  const billSCM    = document.getElementById("billSCM");
+  const billTotal  = document.getElementById("billTotal");
+  const logBody    = document.getElementById("logBody");
+  const logCount   = document.getElementById("logCount");
+
+  // ── Chart ──
+  const canvas  = document.getElementById("chart");
+  const ctx     = canvas.getContext("2d");
+  const history = [];          // { t, gas_l }
+  const MAX_PTS = 60;
+
+  function resizeCanvas() {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", () => { resizeCanvas(); drawChart(); });
+
+  function drawChart() {
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    if (history.length < 2) return;
+
+    const vals = history.map(h => h.gas_l);
+    const maxV = Math.max(...vals, 0.001);
+    const minV = 0;
+
+    // Grid lines
+    ctx.strokeStyle = "rgba(31,74,87,0.9)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = H - (i / 4) * H * 0.85 - H * 0.05;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    // Gradient fill
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0,   "rgba(6,214,199,0.3)");
+    grad.addColorStop(1,   "rgba(6,214,199,0.0)");
+
+    const pts = history.map((h, i) => ({
+      x: (i / (MAX_PTS - 1)) * W,
+      y: H - ((h.gas_l - minV) / (maxV - minV)) * H * 0.85 - H * 0.05
+    }));
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      const cp = { x: (pts[i-1].x + pts[i].x) / 2, y: (pts[i-1].y + pts[i].y) / 2 };
+      ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, cp.x, cp.y);
+    }
+    ctx.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
+    ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      const cp = { x: (pts[i-1].x + pts[i].x) / 2, y: (pts[i-1].y + pts[i].y) / 2 };
+      ctx.quadraticCurveTo(pts[i-1].x, pts[i-1].y, cp.x, cp.y);
+    }
+    ctx.strokeStyle = "#06d6c7"; ctx.lineWidth = 2.5; ctx.stroke();
+
+    // Current dot
+    const last = pts[pts.length - 1];
+    ctx.beginPath(); ctx.arc(last.x, last.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "#06d6c7"; ctx.fill();
+  }
+
+  // ── Event log ──
+  let logRows = [];
+  let prevBurner = null;
+
+  function addLog(data) {
+    // Only log on burner state change
+    if (data.burner === prevBurner) return;
+    prevBurner = data.burner;
+
+    const now = new Date().toLocaleTimeString("en-IN", { hour12: false });
+    logRows.unshift({ time: now, ...data });
+    if (logRows.length > 50) logRows.pop();
+
+    logCount.textContent = `${logRows.length} events`;
+    logBody.innerHTML = logRows.map(r => `
+      <tr>
+        <td>${r.time}</td>
+        <td><span class="badge ${r.burner.toLowerCase()}">${r.burner === "ON" ? "🔥 ON" : "● OFF"}</span></td>
+        <td>${Number(r.time_sec).toFixed(1)}</td>
+        <td>${Number(r.gas_l).toFixed(4)}</td>
+        <td>₹${Number(r.bill_rs).toFixed(4)}</td>
+      </tr>
+    `).join("");
+  }
+
+  // ── Update UI ──
+  function update(data) {
+    const on = data.burner === "ON";
+
+    // Burner hero
+    burnerHero.className  = `burner-hero ${on ? "on" : "off"}`;
+    burnerState.className = `burner-state ${on ? "on" : "off"}`;
+    burnerState.textContent = data.burner;
+    flame.className = `flame ${on ? "on" : ""}`;
+
+    // Values
+    timerVal.textContent = Number(data.time_sec).toFixed(1);
+    gasL.textContent     = Number(data.gas_l).toFixed(4);
+    gasSCM.textContent   = Number(data.gas_scm).toFixed(6);
+    billRs.textContent   = Number(data.bill_rs).toFixed(4);
+    billSCM.textContent  = Number(data.gas_scm).toFixed(6);
+    billTotal.textContent= "₹" + Number(data.bill_rs).toFixed(4);
+
+    // Chart
+    history.push({ t: Date.now(), gas_l: Number(data.gas_l) });
+    if (history.length > MAX_PTS) history.shift();
+    drawChart();
+
+    // Log
+    addLog(data);
+  }
+
+  // ── WebSocket ──
+  function connect() {
+    const ws = new WebSocket(WS_URL);
+
+    ws.onopen = () => {
+      connBadge.className = "conn-badge connected";
+      connText.textContent = "Arduino Connected";
+    };
+
+    ws.onmessage = e => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.source === "disconnected") {
+          connBadge.className = "conn-badge disconnected";
+          connText.textContent = "Arduino Disconnected";
+        } else if (data.source === "waiting") {
+          connBadge.className = "conn-badge waiting";
+          connText.textContent = "Waiting for Arduino…";
+        } else {
+          connBadge.className = "conn-badge connected";
+          connText.textContent = "Arduino Connected";
+          update(data);
+        }
+      } catch(err) { console.error("Parse error", err); }
+    };
+
+    ws.onclose = () => {
+      connBadge.className = "conn-badge disconnected";
+      connText.textContent = "Server Offline — retry in 3s";
+      setTimeout(connect, 3000);
+    };
+
+    ws.onerror = () => ws.close();
+  }
+
+  connect();
+</script>
+</body>
+</html>
