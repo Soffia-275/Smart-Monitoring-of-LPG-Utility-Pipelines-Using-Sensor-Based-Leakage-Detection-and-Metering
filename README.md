@@ -11,7 +11,6 @@
 ![](https://img.shields.io/badge/SDG%209-Industry%2C%20Innovation%20and%20Infrastructure-darkgreen)
 ![](https://img.shields.io/badge/SDG%2011-Sustainable%20Cities%20and%20Communities-darkgreen) <br/>
 ![](https://img.shields.io/badge/Reviewed--brown) <br/>
-![](https://img.shields.io/badge/PRISM_Expo-12_Mar_2026_14:21_to_14:33-gold) <br/> 
 ![](https://img.shields.io/badge/NIR-IR2026--1009659-purple) 
 
 ------
