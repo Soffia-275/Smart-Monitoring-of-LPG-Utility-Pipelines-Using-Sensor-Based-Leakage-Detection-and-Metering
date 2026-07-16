@@ -1,9 +1,3 @@
-<p align="center">
-    <img src="https://github.com/Amrita-TIFAC-Cyber-Blockchain/.github/blob/main/profile/img/AVV_CYS_Logo.png" alt ="Amrita TIFAC" width="700" />
-</p>
-
-# 24CYS333 - Internet of Things
-
 ## Smart Monitoring of LPG Utility Pipelines Using Sensor-Based Leakage Detection and Metering
 
 ![](https://img.shields.io/badge/Member-Ponvedica%20M%20S-gold) ![](https://img.shields.io/badge/Member-Soffia%20K%20N-gold) ![](https://img.shields.io/badge/Member-Vedhavarshini%20Vijayakumar-gold) <br/> 
